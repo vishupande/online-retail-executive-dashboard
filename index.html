@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Retail — Executive Dashboard 2011</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0c10;
+  --surface: #111318;
+  --surface2: #181b22;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #f0f0ee;
+  --muted: #7a7e8a;
+  --accent1: #e8f55a;   /* lime yellow */
+  --accent2: #5af5c8;   /* teal */
+  --accent3: #f55a9e;   /* pink */
+  --accent4: #5a9ef5;   /* blue */
+  --accent5: #f5a55a;   /* amber */
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-display);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: rgba(10,12,16,0.92);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-mark {
+  width: 32px; height: 32px;
+  background: var(--accent1);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.logo-mark svg { width: 18px; height: 18px; }
+
+.logo-text {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.logo-sub {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-weight: 300;
+  letter-spacing: .04em;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  letter-spacing: .06em;
+}
+
+.badge.live {
+  border-color: rgba(232,245,90,0.35);
+  color: var(--accent1);
+  background: rgba(232,245,90,0.06);
+}
+
+.badge.live::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent1);
+  margin-right: 6px;
+  vertical-align: middle;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: .3; }
+}
+
+/* ── NAV TABS ── */
+nav {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 2.5rem;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.tab-btn {
+  position: relative;
+  padding: 1rem 1.5rem;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color .2s;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.tab-btn:hover { color: var(--text); }
+
+.tab-btn.active {
+  color: var(--accent1);
+  border-bottom-color: var(--accent1);
+}
+
+.tab-btn .tab-num {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--surface2);
+  font-size: 10px;
+  line-height: 18px;
+  text-align: center;
+  margin-right: 8px;
+  border: 1px solid var(--border2);
+}
+
+.tab-btn.active .tab-num {
+  background: var(--accent1);
+  color: #0a0c10;
+  border-color: var(--accent1);
+}
+
+/* ── MAIN CONTENT ── */
+main { padding: 2rem 2.5rem 4rem; max-width: 1400px; }
+
+.panel { display: none; animation: fadeIn .3s ease; }
+.panel.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 2rem;
+}
+
+.page-header-left {}
+
+.audience-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.audience-ceo { background: rgba(90,158,245,0.12); color: var(--accent4); border: 1px solid rgba(90,158,245,0.2); }
+.audience-cmo { background: rgba(245,90,158,0.12); color: var(--accent3); border: 1px solid rgba(245,90,158,0.2); }
+
+.page-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.page-desc {
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 500px;
+  line-height: 1.6;
+  font-family: var(--font-mono);
+  font-weight: 300;
+}
+
+/* ── METRIC CARDS ── */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s;
+}
+
+.metric-card:hover { border-color: var(--border2); }
+
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.mc-yellow::before { background: var(--accent1); }
+.mc-teal::before   { background: var(--accent2); }
+.mc-pink::before   { background: var(--accent3); }
+.mc-blue::before   { background: var(--accent4); }
+.mc-amber::before  { background: var(--accent5); }
+
+.metric-label {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.metric-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+
+.metric-value.sm { font-size: 18px; }
+
+.metric-delta {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ── CHART CARD ── */
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.chart-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.chart-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.chart-legend {
+  display: flex;
+  gap: 16px;
+}
+
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.leg-dot {
+  width: 8px; height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.chart-canvas-wrap {
+  position: relative;
+  width: 100%;
+}
+
+/* ── TWO COLUMN GRID ── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .grid-2 { grid-template-columns: 1fr; }
+  main { padding: 1.5rem; }
+  header { padding: 1rem 1.5rem; }
+  nav { padding: 0 1.5rem; }
+}
+
+/* ── INSIGHT CALLOUT ── */
+.insight {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent1);
+  border-radius: 0 10px 10px 0;
+  padding: 1rem 1.25rem;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  line-height: 1.6;
+  margin-top: 1rem;
+}
+
+.insight strong {
+  color: var(--accent1);
+  font-weight: 500;
+}
+
+/* ── DATA TABLE ── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
+
+.data-table th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+}
+
+.data-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+.data-table .rank {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.bar-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bar-inline-track {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.bar-inline-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width .6s ease;
+}
+
+/* ── BUBBLE CHART LEGEND ── */
+.bubble-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 1rem;
+}
+
+.bubble-leg-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  background: var(--surface2);
+  border-radius: 6px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+}
+
+.bub-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* ── DECORATIVE BG ── */
+.page-bg-accent {
+  position: fixed;
+  top: -200px; right: -200px;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,245,90,0.03) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+</style>
+</head>
+<body>
+
+<div class="page-bg-accent"></div>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="9" width="4" height="8" rx="1" fill="#0a0c10"/>
+        <rect x="7" y="5" width="4" height="12" rx="1" fill="#0a0c10"/>
+        <rect x="13" y="1" width="4" height="16" rx="1" fill="#0a0c10"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-text">Online Retail Co.</div>
+      <div class="logo-sub">Executive Analytics · FY 2011</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    <span class="badge">Data cleaned &amp; validated</span>
+    <span class="badge live">530,104 records</span>
+  </div>
+</header>
+
+<nav>
+  <button class="tab-btn active" onclick="showPanel(0)">
+    <span class="tab-num">1</span>Revenue over time
+  </button>
+  <button class="tab-btn" onclick="showPanel(1)">
+    <span class="tab-num">2</span>Top countries
+  </button>
+  <button class="tab-btn" onclick="showPanel(2)">
+    <span class="tab-num">3</span>Top customers
+  </button>
+  <button class="tab-btn" onclick="showPanel(3)">
+    <span class="tab-num">4</span>Global demand
+  </button>
+</nav>
+
+<main>
+
+<!-- ═══════════════════ Q1 ═══════════════════ -->
+<div class="panel active" id="p0">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="audience-tag audience-ceo">CEO · Forecasting</div>
+      <h1 class="page-title">Monthly Revenue — 2011</h1>
+      <p class="page-desc">Granular monthly time series to reveal seasonal trends and support next-year forecasting.</p>
+    </div>
+  </div>
+
+  <div class="metrics-row">
+    <div class="metric-card mc-yellow">
+      <div class="metric-label">Total 2011 Revenue</div>
+      <div class="metric-value">£9.1M</div>
+    </div>
+    <div class="metric-card mc-teal">
+      <div class="metric-label">Peak Month</div>
+      <div class="metric-value sm">November</div>
+      <div class="metric-delta">£1,509,496</div>
+    </div>
+    <div class="metric-card mc-pink">
+      <div class="metric-label">Lowest Month</div>
+      <div class="metric-value sm">February</div>
+      <div class="metric-delta">£523,631</div>
+    </div>
+    <div class="metric-card mc-blue">
+      <div class="metric-label">Q4 vs Q1 Growth</div>
+      <div class="metric-value">+72%</div>
+      <div class="metric-delta">Strong seasonal uplift</div>
+    </div>
+    <div class="metric-card mc-amber">
+      <div class="metric-label">Monthly Avg.</div>
+      <div class="metric-value sm">£758K</div>
+      <div class="metric-delta">Excl. partial months</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-card-header">
+      <div class="chart-card-title">Revenue by Month</div>
+      <div class="chart-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#e8f55a"></div>Monthly Revenue (£)</div>
+        <div class="leg-item"><div class="leg-dot" style="background:rgba(232,245,90,0.25);border:1px dashed #e8f55a"></div>Trend Area</div>
+      </div>
+    </div>
+    <div class="chart-canvas-wrap" style="height:340px">
+      <canvas id="c1" role="img" aria-label="Line chart of monthly revenue in 2011 from January through December, with a strong peak in November.">Jan £691K, Feb £524K, Mar £718K, Apr £538K, May £771K, Jun £762K, Jul £719K, Aug £759K, Sep £1.06M, Oct £1.15M, Nov £1.51M, Dec £639K.</canvas>
+    </div>
+    <div class="insight">
+      <strong>Seasonal Pattern:</strong> Revenue accelerates sharply from September onwards, peaking at <strong>£1.51M in November</strong> — likely driven by pre-Christmas gifting demand. The October–November surge (↑43% vs. August baseline) signals a strong Q4 gifting season. February is the weakest month, typical of post-holiday retail. Forecasting for 2012 should plan capacity increases from <strong>September through November.</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ Q2 ═══════════════════ -->
+<div class="panel" id="p1">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="audience-tag audience-cmo">CMO · Market Analysis</div>
+      <h1 class="page-title">Top 10 Countries by Revenue</h1>
+      <p class="page-desc">Highest revenue-generating markets with quantity sold. United Kingdom excluded per request.</p>
+    </div>
+  </div>
+
+  <div class="metrics-row">
+    <div class="metric-card mc-pink">
+      <div class="metric-label">Top Market</div>
+      <div class="metric-value sm">Netherlands</div>
+      <div class="metric-delta">£285,446 revenue</div>
+    </div>
+    <div class="metric-card mc-teal">
+      <div class="metric-label">Top 10 Revenue</div>
+      <div class="metric-value">£1.77M</div>
+    </div>
+    <div class="metric-card mc-yellow">
+      <div class="metric-label">Top Volume</div>
+      <div class="metric-value sm">Netherlands</div>
+      <div class="metric-delta">200,361 units</div>
+    </div>
+    <div class="metric-card mc-blue">
+      <div class="metric-label">Avg. Unit Value</div>
+      <div class="metric-value sm">EIRE #1</div>
+      <div class="metric-delta">£1.93 per unit</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <div class="chart-card-title">Revenue by Country</div>
+        <div class="chart-legend">
+          <div class="leg-item"><div class="leg-dot" style="background:#f55a9e"></div>Revenue (£)</div>
+        </div>
+      </div>
+      <div class="chart-canvas-wrap" style="height:320px">
+        <canvas id="c2a" role="img" aria-label="Horizontal bar chart of top 10 countries by revenue. Netherlands leads.">Netherlands £285K, EIRE £283K, Germany £229K, France £210K, Australia £139K.</canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <div class="chart-card-title">Quantity Sold by Country</div>
+        <div class="chart-legend">
+          <div class="leg-item"><div class="leg-dot" style="background:#5af5c8"></div>Quantity</div>
+        </div>
+      </div>
+      <div class="chart-canvas-wrap" style="height:320px">
+        <canvas id="c2b" role="img" aria-label="Horizontal bar chart of top 10 countries by quantity sold. Netherlands leads at 200K units.">Netherlands 200K, EIRE 147K, Germany 119K, France 112K, Australia 84K.</canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-card-header">
+      <div class="chart-card-title">Revenue vs. Quantity — Comparison Table</div>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Country</th>
+          <th>Revenue (£)</th>
+          <th>Revenue Share</th>
+          <th>Units Sold</th>
+          <th>Avg. Unit Value</th>
+        </tr>
+      </thead>
+      <tbody id="q2-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════ Q3 ═══════════════════ -->
+<div class="panel" id="p2">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="audience-tag audience-cmo">CMO · Customer Retention</div>
+      <h1 class="page-title">Top 10 Customers by Revenue</h1>
+      <p class="page-desc">Highest revenue-generating customers in descending order — target these for retention strategy.</p>
+    </div>
+  </div>
+
+  <div class="metrics-row">
+    <div class="metric-card mc-pink">
+      <div class="metric-label">Top Customer</div>
+      <div class="metric-value sm">ID 14646</div>
+      <div class="metric-delta">£280,206 revenue</div>
+    </div>
+    <div class="metric-card mc-yellow">
+      <div class="metric-label">Top 10 Combined</div>
+      <div class="metric-value">£1.56M</div>
+    </div>
+    <div class="metric-card mc-teal">
+      <div class="metric-label">Revenue Gap</div>
+      <div class="metric-value">3.6×</div>
+      <div class="metric-delta">#1 vs #10 customer</div>
+    </div>
+    <div class="metric-card mc-blue">
+      <div class="metric-label">Top 2 Customers</div>
+      <div class="metric-value">£540K</div>
+      <div class="metric-delta">34% of top 10 total</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-card-header">
+      <div class="chart-card-title">Revenue per Customer — Descending</div>
+      <div class="chart-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#5af5c8"></div>Revenue (£)</div>
+      </div>
+    </div>
+    <div class="chart-canvas-wrap" style="height:360px">
+      <canvas id="c3" role="img" aria-label="Horizontal bar chart of top 10 customers in descending order. Customer 14646 leads with £280K.">14646 £280K, 18102 £260K, 17450 £195K, 16446 £168K, 14911 £144K, 12415 £125K, 14156 £117K, 17511 £91K, 16029 £81K, 12346 £77K.</canvas>
+    </div>
+    <div class="insight">
+      <strong>Retention Priority:</strong> The top 2 customers (IDs 14646 &amp; 18102) account for <strong>34% of the top-10 segment revenue</strong>. Their loss would materially impact performance. The CMO should initiate personalised account management for all 10, with highest urgency on the top 3. Revenue concentration is steep — #1 spends <strong>3.6× more than #10.</strong>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-card-header">
+      <div class="chart-card-title">Customer Ranking Table</div>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Rank</th><th>Customer ID</th><th>Revenue (£)</th><th>Share of Top 10</th><th>Revenue Bar</th></tr>
+      </thead>
+      <tbody id="q3-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════ Q4 ═══════════════════ -->
+<div class="panel" id="p3">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="audience-tag audience-ceo">CEO · Expansion Strategy</div>
+      <h1 class="page-title">Global Product Demand</h1>
+      <p class="page-desc">All countries by units sold — identify high-demand regions for expansion. United Kingdom excluded.</p>
+    </div>
+  </div>
+
+  <div class="metrics-row">
+    <div class="metric-card mc-blue">
+      <div class="metric-label">Highest Demand</div>
+      <div class="metric-value sm">Netherlands</div>
+      <div class="metric-delta">200,361 units</div>
+    </div>
+    <div class="metric-card mc-yellow">
+      <div class="metric-label">Markets Tracked</div>
+      <div class="metric-value">36</div>
+      <div class="metric-delta">Excl. United Kingdom</div>
+    </div>
+    <div class="metric-card mc-teal">
+      <div class="metric-label">Europe Dominance</div>
+      <div class="metric-value">87%</div>
+      <div class="metric-delta">of total intl. units</div>
+    </div>
+    <div class="metric-card mc-pink">
+      <div class="metric-label">Asia-Pacific</div>
+      <div class="metric-value">~115K</div>
+      <div class="metric-delta">Australia + Japan + SG</div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-card-header">
+      <div class="chart-card-title">Demand by Country — All Markets (single view)</div>
+      <div class="chart-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:#5a9ef5"></div>Units Sold</div>
+      </div>
+    </div>
+    <div class="chart-canvas-wrap" style="height:420px">
+      <canvas id="c4" role="img" aria-label="Bar chart of all 36 countries by quantity sold, excluding UK. Netherlands leads followed by EIRE and Germany.">Top: Netherlands 200K, EIRE 147K, Germany 119K, France 112K, Australia 84K.</canvas>
+    </div>
+    <div class="insight">
+      <strong>Expansion Opportunities:</strong> Continental Europe — particularly <strong>Netherlands, Germany, France</strong> — shows the highest demand outside the UK. The <strong>EIRE (Ireland)</strong> market punches above its weight relative to size. <strong>Australia</strong> is the standout non-European growth market. Norway, Portugal, and Sweden represent underserved mid-tier markets with established demand that could scale with targeted investment.
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-card-header">
+      <div class="chart-card-title">Full Country Demand Table</div>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Rank</th><th>Country</th><th>Units Sold</th><th>Demand Share</th><th>Volume Bar</th></tr>
+      </thead>
+      <tbody id="q4-table"></tbody>
+    </table>
+  </div>
+</div>
+
+</main>
+
+<script>
+/* ─── DATA ─── */
+const Q1 = {
+  labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+  rev:    [691364,523631,717639,537808,770536,761739,719221,759138,1058590,1154979,1509496,638792]
+};
+
+const Q2 = {
+  countries: ['Netherlands','EIRE','Germany','France','Australia','Spain','Switzerland','Belgium','Sweden','Japan'],
+  rev:       [285446,283453,228867,209715,138521,61577,57089,41196,38378,37416],
+  qty:       [200361,147173,119261,112103,83901,27940,30629,23237,36083,26016]
+};
+
+const Q3 = {
+  ids: ['14646','18102','17450','16446','14911','12415','14156','17511','16029','12346'],
+  rev: [280206,259657,194550,168472,143825,124914,117379,91062,81024,77183]
+};
+
+const Q4 = [
+  {c:'Netherlands',q:200361},{c:'EIRE',q:147173},{c:'Germany',q:119261},
+  {c:'France',q:112103},{c:'Australia',q:83901},{c:'Sweden',q:36083},
+  {c:'Switzerland',q:30629},{c:'Spain',q:27940},{c:'Japan',q:26016},
+  {c:'Belgium',q:23237},{c:'Norway',q:19336},{c:'Portugal',q:16258},
+  {c:'Finland',q:10704},{c:'Channel Islands',q:9491},{c:'Denmark',q:8235},
+  {c:'Italy',q:8112},{c:'Cyprus',q:6361},{c:'Singapore',q:5241},
+  {c:'Austria',q:4881},{c:'Hong Kong',q:4773},{c:'Unspecified',q:3466},
+  {c:'USA',q:2458},{c:'Iceland',q:2458},{c:'Israel',q:2384},
+  {c:'Bahrain',q:2066},{c:'Greece',q:1566},{c:'Poland',q:1189},
+  {c:'RSA',q:1170},{c:'UAE',q:982},{c:'Lithuania',q:652},
+  {c:'Czech Republic',q:592},{c:'Eur. Community',q:498},{c:'Lebanon',q:386},
+  {c:'Brazil',q:356},{c:'Canada',q:151},{c:'Saudi Arabia',q:131}
+];
+
+/* ─── CHART DEFAULTS ─── */
+Chart.defaults.color = '#7a7e8a';
+Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.font.size = 11;
+
+const gridColor = 'rgba(255,255,255,0.05)';
+const tickColor = '#7a7e8a';
+
+function fmt(v) { return '£' + Math.round(v).toLocaleString(); }
+function fmtN(v) { return Math.round(v).toLocaleString(); }
+
+/* ─── Q1 LINE CHART ─── */
+new Chart(document.getElementById('c1'), {
+  type: 'line',
+  data: {
+    labels: Q1.labels,
+    datasets: [{
+      label: 'Revenue',
+      data: Q1.rev,
+      borderColor: '#e8f55a',
+      backgroundColor: 'rgba(232,245,90,0.08)',
+      borderWidth: 2.5,
+      pointBackgroundColor: '#e8f55a',
+      pointBorderColor: '#0a0c10',
+      pointBorderWidth: 2,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      fill: true,
+      tension: 0.4
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#181b22',
+        borderColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 1,
+        titleColor: '#f0f0ee',
+        bodyColor: '#e8f55a',
+        padding: 10,
+        callbacks: { label: ctx => ' ' + fmt(ctx.parsed.y) }
+      }
+    },
+    scales: {
+      y: {
+        grid: { color: gridColor },
+        ticks: { color: tickColor, callback: v => '£' + (v/1000).toFixed(0) + 'K' }
+      },
+      x: {
+        grid: { display: false },
+        ticks: { color: tickColor, autoSkip: false }
+      }
+    }
+  }
+});
+
+/* ─── Q2 REVENUE CHART ─── */
+new Chart(document.getElementById('c2a'), {
+  type: 'bar',
+  data: {
+    labels: Q2.countries,
+    datasets: [{
+      label: 'Revenue',
+      data: Q2.rev,
+      backgroundColor: Q2.rev.map((v,i) => i===0 ? '#f55a9e' : 'rgba(245,90,158,0.45)'),
+      borderWidth: 0,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#181b22', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+        titleColor: '#f0f0ee', bodyColor: '#f55a9e', padding: 10,
+        callbacks: { label: ctx => ' ' + fmt(ctx.parsed.x) }
+      }
+    },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { color: tickColor, callback: v => '£'+(v/1000).toFixed(0)+'K' } },
+      y: { grid: { display: false }, ticks: { color: tickColor } }
+    }
+  }
+});
+
+/* ─── Q2 QTY CHART ─── */
+new Chart(document.getElementById('c2b'), {
+  type: 'bar',
+  data: {
+    labels: Q2.countries,
+    datasets: [{
+      label: 'Quantity',
+      data: Q2.qty,
+      backgroundColor: Q2.qty.map((v,i) => i===0 ? '#5af5c8' : 'rgba(90,245,200,0.4)'),
+      borderWidth: 0,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#181b22', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+        titleColor: '#f0f0ee', bodyColor: '#5af5c8', padding: 10,
+        callbacks: { label: ctx => ' ' + fmtN(ctx.parsed.x) + ' units' }
+      }
+    },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { color: tickColor, callback: v => (v/1000).toFixed(0)+'K' } },
+      y: { grid: { display: false }, ticks: { color: tickColor } }
+    }
+  }
+});
+
+/* ─── Q2 TABLE ─── */
+const totalRev = Q2.rev.reduce((a,b) => a+b, 0);
+const q2tbody = document.getElementById('q2-table');
+Q2.countries.forEach((c, i) => {
+  const avgVal = (Q2.rev[i] / Q2.qty[i]).toFixed(2);
+  const share = ((Q2.rev[i] / totalRev) * 100).toFixed(1);
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="rank">${i+1}</td>
+    <td>${c}</td>
+    <td>£${Math.round(Q2.rev[i]).toLocaleString()}</td>
+    <td>
+      <div class="bar-inline">
+        <div class="bar-inline-track"><div class="bar-inline-fill" style="width:${share}%;background:#f55a9e"></div></div>
+        <span>${share}%</span>
+      </div>
+    </td>
+    <td>${Math.round(Q2.qty[i]).toLocaleString()}</td>
+    <td>£${avgVal}</td>
+  `;
+  q2tbody.appendChild(tr);
+});
+
+/* ─── Q3 CHART ─── */
+new Chart(document.getElementById('c3'), {
+  type: 'bar',
+  data: {
+    labels: Q3.ids.map(id => 'ID ' + id),
+    datasets: [{
+      label: 'Revenue',
+      data: Q3.rev,
+      backgroundColor: Q3.rev.map((v,i) => i < 2 ? '#5af5c8' : 'rgba(90,245,200,0.4)'),
+      borderWidth: 0,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#181b22', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+        titleColor: '#f0f0ee', bodyColor: '#5af5c8', padding: 10,
+        callbacks: { label: ctx => ' ' + fmt(ctx.parsed.x) }
+      }
+    },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { color: tickColor, callback: v => '£'+(v/1000).toFixed(0)+'K' } },
+      y: { grid: { display: false }, ticks: { color: tickColor } }
+    }
+  }
+});
+
+/* ─── Q3 TABLE ─── */
+const q3Total = Q3.rev.reduce((a,b) => a+b, 0);
+const q3tbody = document.getElementById('q3-table');
+Q3.ids.forEach((id, i) => {
+  const share = ((Q3.rev[i] / q3Total) * 100).toFixed(1);
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="rank">${i+1}</td>
+    <td style="font-weight:500;color:${i<2?'#5af5c8':'inherit'}">ID ${id}</td>
+    <td>£${Math.round(Q3.rev[i]).toLocaleString()}</td>
+    <td>${share}%</td>
+    <td>
+      <div class="bar-inline">
+        <div class="bar-inline-track" style="min-width:120px"><div class="bar-inline-fill" style="width:${(Q3.rev[i]/Q3.rev[0]*100).toFixed(0)}%;background:${i<2?'#5af5c8':'rgba(90,245,200,0.5)'}"></div></div>
+      </div>
+    </td>
+  `;
+  q3tbody.appendChild(tr);
+});
+
+/* ─── Q4 BAR CHART ─── */
+const q4Colors = Q4.map((d, i) => {
+  const palette = ['#5a9ef5','rgba(90,158,245,0.75)','rgba(90,158,245,0.6)','rgba(90,158,245,0.5)','rgba(90,158,245,0.4)'];
+  return palette[Math.min(i, palette.length-1)];
+});
+
+new Chart(document.getElementById('c4'), {
+  type: 'bar',
+  data: {
+    labels: Q4.map(d => d.c),
+    datasets: [{
+      label: 'Units Sold',
+      data: Q4.map(d => d.q),
+      backgroundColor: q4Colors,
+      borderWidth: 0,
+      borderRadius: 3
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#181b22', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+        titleColor: '#f0f0ee', bodyColor: '#5a9ef5', padding: 10,
+        callbacks: { label: ctx => ' ' + fmtN(ctx.parsed.y) + ' units' }
+      }
+    },
+    scales: {
+      y: { grid: { color: gridColor }, ticks: { color: tickColor, callback: v => (v/1000).toFixed(0)+'K' } },
+      x: {
+        grid: { display: false },
+        ticks: { color: tickColor, autoSkip: false, maxRotation: 55, font: { size: 9 } }
+      }
+    }
+  }
+});
+
+/* ─── Q4 TABLE ─── */
+const q4Total = Q4.reduce((a,d) => a+d.q, 0);
+const q4tbody = document.getElementById('q4-table');
+Q4.forEach((d, i) => {
+  const share = ((d.q / q4Total) * 100).toFixed(1);
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="rank">${i+1}</td>
+    <td style="font-weight:${i<3?'600':'400'};color:${i<3?'#5a9ef5':'inherit'}">${d.c}</td>
+    <td>${Math.round(d.q).toLocaleString()}</td>
+    <td>${share}%</td>
+    <td>
+      <div class="bar-inline">
+        <div class="bar-inline-track" style="min-width:100px"><div class="bar-inline-fill" style="width:${(d.q/Q4[0].q*100).toFixed(0)}%;background:#5a9ef5"></div></div>
+      </div>
+    </td>
+  `;
+  q4tbody.appendChild(tr);
+});
+
+/* ─── TAB SWITCHING ─── */
+function showPanel(i) {
+  document.querySelectorAll('.panel').forEach((p,j) => p.classList.toggle('active', i===j));
+  document.querySelectorAll('.tab-btn').forEach((t,j) => t.classList.toggle('active', i===j));
+}
+</script>
+</body>
+</html>
